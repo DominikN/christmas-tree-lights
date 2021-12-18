@@ -3,6 +3,9 @@
 #include <ESPAsyncWebServer.h>
 #include <Husarnet.h>
 #include <WiFi.h>
+#include <NeoPixelBus.h>
+
+#include "LED_scheme.h"
 
 #define HTTP_PORT 8080
 
@@ -26,6 +29,14 @@ const char *husarnetJoinCode = HUSARNET_JOINCODE;  // find at app.husarnet.com
 const char *dashboardURL = "default";
 
 #endif
+
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(NUMPIXELS, PIN);
+
+int j = 0;
+
+uint8_t modeRGB = 0;
+
+uint8_t rgb[3];
 
 AsyncWebServer server(HTTP_PORT);
 
@@ -101,17 +112,49 @@ void setup(void) {
   // PLACE YOUR APPLICATION CODE BELOW
   // ===============================================
 
+  strip.Begin();
+  strip.Show();
+
   // Example webserver hosting table with known Husarnet Hosts
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "hello");
   });
 
   // Send a GET request to <IP>/sensor/<number>/action/<action>
-  server.on("^\\/color\\=([a-z]+)$", HTTP_GET,
-            [](AsyncWebServerRequest *request) {
-              String color = request->pathArg(0);
-              request->send(200, "text/plain", "Hello, color: " + color);
-            });
+  server.on("^\\/mode\\=([0-9]+)$", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String mode = request->pathArg(0);
+    request->send(200, "text/plain", "Hello, mode: " + mode);
+    Serial1.print("Hello, mode: " + mode + "\r\n");
+
+    modeRGB = mode.toInt();
+  });
+
+  // Send a GET request to <IP>/sensor/<number>/action/<action>
+  server.on("^\\/color\\=([a-z]+)$", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String color = request->pathArg(0);
+    request->send(200, "text/plain", "Hello, color: " + color);
+    Serial1.print("Hello, color: " + color + "\r\n");
+
+    modeRGB = 5;
+
+    if(color == "yellow") {
+      rgb[0] = 255;
+      rgb[1] = 255;
+      rgb[2] = 0;
+    }
+
+    if(color == "red") {
+      rgb[0] = 255;
+      rgb[1] = 0;
+      rgb[2] = 0;
+    }
+
+    if(color == "green") {
+      rgb[0] = 0;
+      rgb[1] = 255;
+      rgb[2] = 0;
+    }
+  });
 
   Serial1.println("🚀 HTTP server started\r\n");
   Serial1.printf("Visit:\r\nhttp://%s:%d/\r\n\r\n", hostName, HTTP_PORT);
@@ -123,4 +166,31 @@ void setup(void) {
   }
 }
 
-void loop(void) { ; }
+void loop(void) {
+  switch (modeRGB) {
+    case 0:
+      rainbow(j++);
+      break;
+    case 1:
+      white_shine(j++);
+      break;
+    case 2:
+      red_shine(j++);
+      break;
+    case 3:
+      led_white();
+      break;
+    case 4:
+      led_off();
+      break;
+    case 5:
+      led_rgb(rgb[0], rgb[1], rgb[2]);
+      break;
+    default:
+      rainbow(j++);
+      break;
+  }
+  if (j >= NUMPIXELS) {
+    j = 0;
+  }
+}
