@@ -1,3 +1,6 @@
+# 1 "/tmp/tmps2vv6e7g"
+#include <Arduino.h>
+# 1 "/home/dominik/tech/christmas-tree-lights/src/simple-webserver.ino"
 #include <AsyncElegantOTA.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -11,21 +14,21 @@
 
 #if __has_include("credentials.h")
 
-// For local development (rename credenials-template.h and type your WiFi and
-// Husarnet credentials there)
+
+
 #include "credentials.h"
 
 #else
 
-// For GitHub Actions OTA deploment
 
-// WiFi credentials
+
+
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASS;
 
-// Husarnet credentials
+
 const char *hostName = HUSARNET_HOSTNAME;
-const char *husarnetJoinCode = HUSARNET_JOINCODE;  // find at app.husarnet.com
+const char *husarnetJoinCode = HUSARNET_JOINCODE;
 const char *dashboardURL = "default";
 
 #endif
@@ -39,22 +42,24 @@ uint8_t modeRGB = 0;
 uint8_t rgb[3];
 
 AsyncWebServer server(HTTP_PORT);
-
+void setup(void);
+void loop(void);
+#line 43 "/home/dominik/tech/christmas-tree-lights/src/simple-webserver.ino"
 void setup(void) {
-  // ===============================================
-  // Wi-Fi, OTA and Husarnet VPN configuration
-  // ===============================================
 
-  // remap default Serial (used by Husarnet logs)
-  Serial.begin(115200, SERIAL_8N1, 16, 17);  // from P3 & P1 to P16 & P17
+
+
+
+
+  Serial.begin(115200, SERIAL_8N1, 16, 17);
   Serial1.begin(115200, SERIAL_8N1, 3,
-                1);  // remap Serial1 from P9 & P10 to P3 & P1
+                1);
 
   Serial1.println("\r\n**************************************");
   Serial1.println("GitHub Actions OTA example");
   Serial1.println("**************************************\r\n");
 
-  // Init Wi-Fi
+
   Serial1.printf("📻 1. Connecting to: %s Wi-Fi network ", ssid);
 
   WiFi.mode(WIFI_STA);
@@ -71,15 +76,15 @@ void setup(void) {
 
   Serial1.println(" done\r\n");
 
-  // Init Husarnet P2P VPN service
+
   Serial1.printf("⌛ 2. Waiting for Husarnet to be ready ");
 
   Husarnet.selfHostedSetup(dashboardURL);
   Husarnet.join(husarnetJoinCode, hostName);
   Husarnet.start();
 
-  // Before Husarnet is ready peer list contains:
-  // master (0000:0000:0000:0000:0000:0000:0000:0001)
+
+
   const uint8_t addr_comp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
   bool husarnetReady = 0;
   while (husarnetReady == 0) {
@@ -96,7 +101,7 @@ void setup(void) {
 
   Serial1.println(" done\r\n");
 
-  // define HTTP API for remote reset
+
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "Reseting ESP32 after 1s ...");
     Serial1.println("Software reset on POST request");
@@ -104,23 +109,23 @@ void setup(void) {
     ESP.restart();
   });
 
-  // Init OTA webserver (available under /update path)
+
   AsyncElegantOTA.begin(&server);
   server.begin();
 
-  // ===============================================
-  // PLACE YOUR APPLICATION CODE BELOW
-  // ===============================================
+
+
+
 
   strip.Begin();
   strip.Show();
 
-  // Example webserver hosting table with known Husarnet Hosts
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "hello");
   });
 
-  // Send a GET request to <IP>/sensor/<number>/action/<action>
+
   server.on("^\\/mode\\=([0-9]+)$", HTTP_GET, [](AsyncWebServerRequest *request) {
     String mode = request->pathArg(0);
     request->send(200, "text/plain", "Hello, mode: " + mode);
@@ -129,7 +134,7 @@ void setup(void) {
     modeRGB = mode.toInt();
   });
 
-  // Send a GET request to <IP>/sensor/<number>/action/<action>
+
   server.on("^\\/color\\=([a-z]+)$", HTTP_GET, [](AsyncWebServerRequest *request) {
     String color = request->pathArg(0);
     request->send(200, "text/plain", "Hello, color: " + color);
