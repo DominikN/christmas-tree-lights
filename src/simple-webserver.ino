@@ -29,18 +29,15 @@ const char *dashboardURL = "default";
 
 AsyncWebServer server(HTTP_PORT);
 
-// index.html available in "index_html" const String
-extern const char index_html_start[] asm("_binary_src_index_html_start");
-const String index_html = String((const char*)index_html_start);
-
 void setup(void) {
   // ===============================================
   // Wi-Fi, OTA and Husarnet VPN configuration
   // ===============================================
 
-  // remap default Serial (used by Husarnet logs) 
+  // remap default Serial (used by Husarnet logs)
   Serial.begin(115200, SERIAL_8N1, 16, 17);  // from P3 & P1 to P16 & P17
-  Serial1.begin(115200, SERIAL_8N1, 3, 1);  // remap Serial1 from P9 & P10 to P3 & P1
+  Serial1.begin(115200, SERIAL_8N1, 3,
+                1);  // remap Serial1 from P9 & P10 to P3 & P1
 
   Serial1.println("\r\n**************************************");
   Serial1.println("GitHub Actions OTA example");
@@ -70,7 +67,7 @@ void setup(void) {
   Husarnet.join(husarnetJoinCode, hostName);
   Husarnet.start();
 
-  // Before Husarnet is ready peer list contains: 
+  // Before Husarnet is ready peer list contains:
   // master (0000:0000:0000:0000:0000:0000:0000:0001)
   const uint8_t addr_comp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
   bool husarnetReady = 0;
@@ -106,15 +103,23 @@ void setup(void) {
 
   // Example webserver hosting table with known Husarnet Hosts
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/html", index_html);
+    request->send(200, "text/plain", "hello");
   });
+
+  // Send a GET request to <IP>/sensor/<number>/action/<action>
+  server.on("^\\/color\\=([a-z]+)$", HTTP_GET,
+            [](AsyncWebServerRequest *request) {
+              String color = request->pathArg(0);
+              request->send(200, "text/plain", "Hello, color: " + color);
+            });
 
   Serial1.println("🚀 HTTP server started\r\n");
   Serial1.printf("Visit:\r\nhttp://%s:%d/\r\n\r\n", hostName, HTTP_PORT);
 
   Serial1.printf("Known hosts:\r\n");
   for (auto const &host : Husarnet.listPeers()) {
-    Serial1.printf("%s (%s)\r\n", host.second.c_str(), host.first.toString().c_str());
+    Serial1.printf("%s (%s)\r\n", host.second.c_str(),
+                   host.first.toString().c_str());
   }
 }
 
