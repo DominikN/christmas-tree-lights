@@ -10,12 +10,8 @@
 #define HTTP_PORT 8080
 
 #if __has_include("credentials.h")
-
-// For local development (rename credenials-template.h and type your WiFi and
-// Husarnet credentials there)
 #include "credentials.h"
-
-#else
+#endif
 
 // For GitHub Actions OTA deploment
 
@@ -24,11 +20,9 @@ const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASS;
 
 // Husarnet credentials
-const char *hostName = HUSARNET_HOSTNAME;
 const char *husarnetJoinCode = HUSARNET_JOINCODE;  // find at app.husarnet.com
+const char *hostName = "pixel-led-chain";
 const char *dashboardURL = "default";
-
-#endif
 
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(NUMPIXELS, PIN);
 
@@ -51,7 +45,7 @@ void setup(void) {
                 1);  // remap Serial1 from P9 & P10 to P3 & P1
 
   Serial1.println("\r\n**************************************");
-  Serial1.println("GitHub Actions OTA example");
+  Serial1.println("Christmas Tree Lights");
   Serial1.println("**************************************\r\n");
 
   // Init Wi-Fi
@@ -164,7 +158,6 @@ void setup(void) {
     Serial1.printf("%s (%s)\r\n", host.second.c_str(),
                    host.first.toString().c_str());
   }
-
 }
 
 void loop(void) {

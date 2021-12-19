@@ -1,8 +1,6 @@
-# esp32-internet-ota
+# christmast-tree-lights
 
-ESP32 + GitHub Actions + Husarnet. 
-
-A boilerplate project for ESP32 allowing in-field firmware update using GitHub Actions workflow.
+ESP32 powered controller for WS2812 based pixel LED strip (chain) with HTTP API and GitHub Actions workflow for OTA.
 
 > **Prerequisites** 
 >
@@ -12,17 +10,15 @@ A boilerplate project for ESP32 allowing in-field firmware update using GitHub A
 
 ### First setup
 
-1. Click **[Use this template](https://github.com/husarnet/esp32-internet-ota/generate)** button to create your own copy of this repo.
+1. Clone the repo and open it in Visual Studio Code. Platformio should automatically install all project dependencies.
 
-2. Clone the repo you have just created and open it in Visual Studio Code. Platformio should automatically install all project dependencies.
-
-3. Rename `credentials-template.h` to `credentials.h` and type your WiFi an Husarnet credentials there (you will find you Husarnet Join Code at https://app.husarnet.com).
+2. Rename `credentials-template.h` to `credentials.h` and type your WiFi an Husarnet credentials there (you will find you Husarnet Join Code at https://app.husarnet.com).
 
 4. Click "PlatformIO: upload" button to flash your ESP32 board connected to your laptop. You will find the following log in the serial monitor:
 
     ```bash
     **************************************
-    GitHub Actions OTA example
+    Christmas Tree Lights
     **************************************
     
     📻 1. Connecting to: FreeWifi Wi-Fi network .. done
@@ -32,12 +28,20 @@ A boilerplate project for ESP32 allowing in-field firmware update using GitHub A
     🚀 HTTP server started
 
     Visit:
-    http://my-esp32:8080/
+    http://pixel-led-chain:8080/
 
     Known hosts:
     my-laptop (fc94:a4c1:1f22:ab3b:b04a:1a3b:ba15:84bc)
-    my-esp32 (fc94:f632:c8d9:d2a6:ad18:ed16:ed7e:9f3f)
+    pixel-led-chain (fc94:f632:c8d9:d2a6:ad18:ed16:ed7e:9f3f)
     ```
+
+5. HTTP API examples:
+
+    - `curl http://pixel-led-chain:8080/mode=0` - set `modeRGB=0`(rainbow theme)
+    - `curl http://pixel-led-chain:8080/color=red` - set `modeRGB=5` and `rgb={255,0,0}` (all LEDs red)
+    - `curl http://pixel-led-chain:8080/color=yellow` - set `modeRGB=5` and `rgb={255,255,0}` (all LEDs yellow):
+    - `curl http://pixel-led-chain:8080/color=green` - set `modeRGB=5` and `rgb={0,255,0}` (all LEDs green):
+
 
 ### Internet OTA with GitHub Actions
 
@@ -47,7 +51,6 @@ A boilerplate project for ESP32 allowing in-field firmware update using GitHub A
     | - | - | - |
     | `WIFI_SSID` | FreeWifi | just your WiFi network name |
     | `WIFI_PASS` | hardtoguess | ... and password |
-    | `HUSARNET_HOSTNAME` | my-esp32 | hostname under which you want your ESP32 to be available by other peers |
     | `HUSARNET_JOINCODE` | fc94:...:932a/xhfqwPxxxetyCExsSPRPn9 | find your own **secret** Join Code at your user account at https://app/husarnet.com > `choosen network` >  `add element` button. Anyone with this Join Code can connect to your Husarnet network |
 
 2. Push changes to your repo:

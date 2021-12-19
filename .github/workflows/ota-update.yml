@@ -19,7 +19,7 @@ jobs:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
 
     - name: ESP32 software reset
-      run: curl -X POST 'http://${{ secrets.HUSARNET_HOSTNAME }}:8080/reset'
+      run: curl -X POST 'http://pixel-led-chain:8080/reset'
 
     - name: Installing platformio
       run: pip3 install -U platformio
@@ -29,7 +29,6 @@ jobs:
         export SSID=${{ secrets.WIFI_SSID }}
         export PASS=${{ secrets.WIFI_PASS }}
         export JOINCODE=${{ secrets.HUSARNET_JOINCODE }}
-        export HOSTNAME=${{ secrets.HUSARNET_HOSTNAME }}
         pio run
 
     - name: Uploading a firmware to ESP32
@@ -40,7 +39,7 @@ jobs:
         -H 'Connection: keep-alive'
         -F "MD5="$(md5sum "${{ github.workspace }}/.pio/build/esp32dev/firmware.bin" | cut -d ' ' -f 1)""
         -F 'firmware=@${{ github.workspace }}/.pio/build/esp32dev/firmware.bin'
-        'http://${{ secrets.HUSARNET_HOSTNAME }}:8080/update'
+        'http://pixel-led-chain:8080/update'
 
     - name: Stop Husarnet
       run: sudo systemctl stop husarnet
