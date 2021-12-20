@@ -1,5 +1,7 @@
 # christmast-tree-lights
 
+[![Firmware build](https://github.com/DominikN/christmas-tree-lights/actions/workflows/build.yml/badge.svg)](https://github.com/DominikN/christmas-tree-lights/actions/workflows/build.yml)
+
 ESP32 powered controller for WS2812 based pixel LED strip (chain) with HTTP API and GitHub Actions workflow for OTA.
 
 > **Prerequisites** 

@@ -3,7 +3,10 @@ name: ESP32 OTA update
 on:
   push:
     branches:
-      - 'main'
+      - main
+    tags:
+      - v1
+      - v1.*
 
 jobs:
   build:
