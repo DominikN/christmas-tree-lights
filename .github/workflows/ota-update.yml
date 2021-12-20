@@ -2,8 +2,6 @@ name: ESP32 OTA update
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v1
       - v1.*

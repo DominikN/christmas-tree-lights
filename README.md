@@ -1,4 +1,4 @@
-# christmast-tree-lights
+# christmas-tree-lights
 
 [![Firmware build](https://github.com/DominikN/christmas-tree-lights/actions/workflows/build.yml/badge.svg)](https://github.com/DominikN/christmas-tree-lights/actions/workflows/build.yml)
 
